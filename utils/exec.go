@@ -6,11 +6,15 @@ import (
 	"github.com/prometheus/common/log"
 	"os/exec"
 )
+
+type ErrorCallBack func(e error, errString string) (err error)
 type CmdObject struct {
-	Name string   `json:"name"`
-	Arg  []string `json:"arg"`
+	Name        string        `json:"name"`
+	Arg         []string      `json:"arg"`
+	ErrCallBack ErrorCallBack `json:"err_call_back"`
 }
-func  ExeCMD(item *CmdObject) (err error) {
+
+func ExeCMD(item *CmdObject) (err error) {
 	var buf []byte
 	var stderr bytes.Buffer
 	cmdString := []interface{}{"【CMD】:", item.Name}
@@ -21,12 +25,18 @@ func  ExeCMD(item *CmdObject) (err error) {
 	cmd := exec.Command(item.Name, item.Arg...)
 	cmd.Stderr = &stderr
 	buf, err = cmd.Output()
-	if err != nil {
-		log.Error("错误信息输出", err.Error())
-		log.Error(stderr.String())
+	if err == nil {
+		fmt.Printf("%s\n", buf)
+		return
 	}
 
-	fmt.Printf("%s\n", buf)
+	if item.ErrCallBack == nil {
+		log.Error("错误信息输出:", err.Error())
+		log.Error(stderr.String())
+		return
+	}
+
+	log.Infof("err:%s \n%s \n", err.Error(), stderr.String())
+	item.ErrCallBack(err, stderr.String())
 	return
 }
-

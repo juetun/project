@@ -2,23 +2,27 @@ package lib
 
 import (
 	"fmt"
+	"github.com/juetun/project/common_argument"
 	"github.com/juetun/project/utils"
 	"github.com/prometheus/common/log"
 )
 
 type TestAction struct {
+	arg *common_argument.CommonArgumentStruct
 }
 
-func NewTestAction() (res *TestAction) {
-	return &TestAction{}
+func NewTestAction(arg *common_argument.CommonArgumentStruct) (res *TestAction) {
+	return &TestAction{
+		arg: arg,
+	}
 }
 func (r *TestAction) Run() {
-	var branchName string = "1.0.1"
+	var branchName = r.arg.AppVersion
 	cmdSlice := []utils.CmdObject{
 		{Name: "git", Arg: []string{"checkout", "-B", "master", "origin/master"}},
 		{Name: "git", Arg: []string{"pull"}},
 		{Name: "git", Arg: []string{"checkout", "-B", "develop", "origin/develop"}},
-		{Name: "git", Arg: []string{"rebase","origin/master"}},
+		{Name: "git", Arg: []string{"rebase", "origin/master"},},
 		{Name: "git", Arg: []string{"branch"}},
 		{Name: "git", Arg: []string{"pull", "origin", fmt.Sprintf("release/%s", branchName)}},
 		{Name: "git", Arg: []string{"push", "--set-upstream", "origin", "develop",}},

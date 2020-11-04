@@ -2,8 +2,7 @@ package lib
 
 import (
 	"fmt"
-	"github.com/juetun/base-wrapper/lib/app_obj"
-	"github.com/juetun/base-wrapper/lib/common"
+	"github.com/juetun/project/common_argument"
 	"github.com/juetun/project/utils"
 	"github.com/manifoldco/promptui"
 	"github.com/prometheus/common/log"
@@ -12,10 +11,13 @@ import (
 )
 
 type DevelopAction struct {
+	arg *common_argument.CommonArgumentStruct
 }
 
-func NewDevelopAction() (r *DevelopAction) {
-	return &DevelopAction{}
+func NewDevelopAction(arg *common_argument.CommonArgumentStruct) (r *DevelopAction) {
+	return &DevelopAction{
+		arg: arg,
+	}
 }
 
 func (r *DevelopAction) Run() {
@@ -103,6 +105,5 @@ func (r *DevelopAction) reverse(s []string) []string {
 	return s
 }
 func (r *DevelopAction) getVersion() (res string) {
-	common.PluginsApp()
-	return strings.TrimLeft(app_obj.App.AppVersion, "v")
+	return strings.TrimLeft(r.arg.AppVersion, "v")
 }

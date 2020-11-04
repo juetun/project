@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/juetun/project/common_argument"
 	"github.com/juetun/project/lib"
 	"log"
 )
@@ -50,13 +51,13 @@ func NewFlagParameter() (res *FlagParameter) {
 func (r *FlagParameter) Run() {
 	switch r.flagParameter.Release {
 	case "develop": //生成开发数据
-		lib.NewDevelopAction().
+		lib.NewDevelopAction(&common_argument.CommonArgument).
 			Run()
 	case "fix": //修复BUG
-		lib.NewFixAction().
+		lib.NewFixAction(&common_argument.CommonArgument).
 			Run()
 	case "test": //测试数据
-		lib.NewTestAction().
+		lib.NewTestAction(&common_argument.CommonArgument).
 			Run()
 	default:
 		log.Fatalf("您输入的指令当前不支持 (%s)\n", r.flagParameter.Release)
