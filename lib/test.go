@@ -5,6 +5,7 @@ import (
 	"github.com/juetun/project/common_argument"
 	"github.com/juetun/project/utils"
 	"github.com/prometheus/common/log"
+	"strings"
 )
 
 type TestAction struct {
@@ -17,7 +18,7 @@ func NewTestAction(arg *common_argument.CommonArgumentStruct) (res *TestAction) 
 	}
 }
 func (r *TestAction) Run() {
-	var branchName = r.arg.AppVersion
+	var branchName = strings.TrimLeft(r.arg.AppVersion,"v")
 	cmdSlice := []utils.CmdObject{
 		{Name: "git", Arg: []string{"checkout", "-B", "master", "origin/master"}},
 		{Name: "git", Arg: []string{"pull"}},
