@@ -67,7 +67,7 @@ func (r *FlagParameter) Run() {
 func (r *FlagParameter) InitFlag() (res *FlagParameter) {
 	res = r
 	// &user 就是接收命令行中输入 -u 后面的参数值，其他同理
-	flag.StringVar(&r.flagParameter.Release, "release", "develop", "创建一个新的版本")
+	flag.StringVar(&r.flagParameter.Release, "release", "develop", "创建一个新的版本(支持如下参数):\ndevelop:	生成一个新的开发分支\ntest:		将代码发布到develop分支\n")
 
 	// 解析命令行参数写入注册的flag里
 	flag.Parse()
