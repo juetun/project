@@ -45,7 +45,7 @@ func (r *DevelopAction) cmdDevelopByVersion(version, sourceVersion string) {
 			return
 		}
 	}
-
+	return
 }
 func (r *DevelopAction) develop() {
 
