@@ -10,6 +10,7 @@ import (
 
 type FlagParams struct {
 	Release string `json:"release"`
+	Pkg     string `json:"pkg"` //mod模式依赖包路径
 }
 
 func main() {
@@ -51,8 +52,11 @@ func NewFlagParameter() (res *FlagParameter) {
 func (r *FlagParameter) Run() {
 	switch r.flagParameter.Release {
 	case "mod":
-		lib.NewGoModAction(&common_argument.CommonArgument).
-			Run()
+		act := lib.NewGoModAction(&common_argument.CommonArgument)
+		if r.flagParameter.Pkg != "" {
+			act.DependPkgString = r.flagParameter.Pkg
+		}
+		act.Run()
 	case "develop":                  //生成开发数据
 		common_argument.InitConfig() //初始化配置数据
 		lib.NewDevelopAction(&common_argument.CommonArgument).
@@ -72,6 +76,7 @@ func (r *FlagParameter) InitFlag() (res *FlagParameter) {
 	res = r
 	// &user 就是接收命令行中输入 -u 后面的参数值，其他同理
 	flag.StringVar(&r.flagParameter.Release, "release", "develop", "创建一个新的版本(支持如下参数):\ndevelop:\t\t生成一个新的开发分支\ntest:\t\t\t将代码发布到develop分支\n")
+	flag.StringVar(&r.flagParameter.Pkg, "pkg", "", "go mod 要更新的依赖包")
 
 	// 解析命令行参数写入注册的flag里
 	flag.Parse()

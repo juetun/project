@@ -12,9 +12,10 @@ import (
 )
 
 type GoModAction struct {
-	arg     *common_argument.CommonArgumentStruct
-	Prefix  string  `json:"prefix"`
-	appList AppList `json:"app_list"`
+	arg             *common_argument.CommonArgumentStruct
+	Prefix          string  `json:"prefix"`
+	appList         AppList `json:"app_list"`
+	DependPkgString string  `json:"depend_pkg_string"`
 }
 
 type AppList struct {
@@ -28,7 +29,7 @@ func (r *GoModAction) ReadData() (err error) {
 	if dir, err = os.Getwd(); err != nil {
 		return
 	}
-	configFilePath := fmt.Sprintf("%s/appmap.yaml", dir)
+	configFilePath := fmt.Sprintf("%s/config/appcommon.yaml", dir)
 	log.Infof("读取配置文件:%s", configFilePath)
 	if yamlFile, err = ioutil.ReadFile(configFilePath); err != nil {
 		log.Fatalf("yamlFile.Get err #%v \n", err)
@@ -45,7 +46,7 @@ func (r *GoModAction) runItem(proPatch string) (err error) {
 	log.Info("执行项目:", proPatch)
 	goPatch := os.Getenv("GOPATH")
 	pwdProject := fmt.Sprintf("%s/src/%s%s", goPatch, r.Prefix, proPatch)
-	cmdSlice := utils.CmdObject{Name: "go", Arg: []string{"get", "-v", "github.com/juetun/base-wrapper@v0.0.199"}}
+	cmdSlice := utils.CmdObject{Name: "go", Arg: []string{"get", "-v", r.DependPkgString}}
 	cmdSlice.Dir = pwdProject
 	if err = utils.ExeCMD(&cmdSlice); err != nil {
 		log.Error(err.Error())
@@ -93,6 +94,9 @@ func NewGoModAction(arg *common_argument.CommonArgumentStruct) (res *GoModAction
 	res = &GoModAction{arg: arg}
 	if res.Prefix == "" {
 		res.Prefix = "github.com/juetun/"
+	}
+	if res.DependPkgString == "" {
+		res.DependPkgString = "github.com/juetun/base-wrapper@latest"
 	}
 	return
 }
