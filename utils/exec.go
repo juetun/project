@@ -12,9 +12,11 @@ type CmdObject struct {
 	Name        string        `json:"name"`
 	Arg         []string      `json:"arg"`
 	ErrCallBack ErrorCallBack `json:"err_call_back"`
+	Dir         string        `json:"dir"`
 }
 
 func ExeCMD(item *CmdObject) (err error) {
+
 	var buf []byte
 	var stderr bytes.Buffer
 	cmdString := []interface{}{"【CMD】:", item.Name}
@@ -22,10 +24,13 @@ func ExeCMD(item *CmdObject) (err error) {
 		cmdString = append(cmdString, value)
 	}
 	fmt.Println(cmdString...)
+
 	cmd := exec.Command(item.Name, item.Arg...)
 	cmd.Stderr = &stderr
-	buf, err = cmd.Output()
-	if err == nil {
+	if item.Dir != "" {
+		cmd.Dir = item.Dir
+	}
+	if buf, err = cmd.Output(); err == nil {
 		fmt.Printf("%s\n", buf)
 		return
 	}

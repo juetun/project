@@ -26,6 +26,7 @@ func (r *DevelopAction) Run() {
 
 //https://www.jianshu.com/p/34b95c5eedb6
 func (r *DevelopAction) cmdDevelopByVersion(version, sourceVersion string) {
+
 	branchName := fmt.Sprintf("release/%s", version)
 	cmdSlice := []utils.CmdObject{
 		{Name: "git", Arg: []string{"fetch"}},
@@ -39,9 +40,8 @@ func (r *DevelopAction) cmdDevelopByVersion(version, sourceVersion string) {
 	}
 	fmt.Printf("创建分支:\n")
 	for _, item := range cmdSlice {
-		err := utils.ExeCMD(&item)
-		if err != nil {
-			log.Error(err.Error())
+		if err := utils.ExeCMD(&item); err != nil {
+			log.Fatalf(err.Error())
 			return
 		}
 	}
@@ -67,7 +67,7 @@ func (r *DevelopAction) selectVersion() (res string, sourceVersion string) {
 	}
 	_, res, err := prompt.Run()
 	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
+		log.Fatalf("Prompt failed %v\n", err)
 		return
 	}
 	fmt.Printf("您选择的版本为：%s \n", res)
@@ -76,10 +76,15 @@ func (r *DevelopAction) selectVersion() (res string, sourceVersion string) {
 
 //获取当前可选择的版本
 func (r *DevelopAction) orgVersion(version string) (res []string) {
+
 	var err error
 	var v int
 	listVersionString := strings.Split(version, ".")
-	res = make([]string, 0, len(listVersionString))
+	res = make([]string, 0, len(listVersionString)+1)
+	if listVersionString[len(listVersionString)-1] == "0" {
+		res = append(res, fmt.Sprintf("%s.1", version))
+	}
+
 	for key, item := range listVersionString {
 		listVersionString[key] = item
 	}

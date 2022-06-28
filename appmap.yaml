@@ -1,0 +1,17 @@
+
+apps:
+  - "app-api-activity"
+  - "app-api-chat"
+  - "app-api-export"
+  - "app-api-notice"
+  - "app-api-order"
+  - "app-api-ordercomment"
+  - "app-api-recommend"
+  - "app-api-tag"
+  - "app-api-upload"
+  - "app-api-user"
+  - "app-main-web"
+  - "dashboard-api-car"
+  - "dashboard-api-main"
+  - "app-api-comment"
+  - "app-api-mall"
