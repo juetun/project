@@ -66,15 +66,25 @@ func (r *GoModAction) Run() {
 	//	r.runItem(projectPatch)
 	//}
 	var syncG sync.WaitGroup
+	var i int
+	var have bool
 	for _, projectPatch := range r.appList.Apps {
-	
+		i++
 		syncG.Add(1)
+		have = true
 		go func(proPatch string) {
 			defer syncG.Done()
 			r.runItem(proPatch)
 		}(projectPatch)
+		if i%5 == 0 {
+			syncG.Wait()
+			have = false
+		}
 	}
-	syncG.Wait()
+	if have {
+		log.Info("结束操作")
+		syncG.Wait()
+	}
 	log.Info("操作完成")
 	return
 }
