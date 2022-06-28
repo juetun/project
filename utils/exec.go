@@ -12,8 +12,8 @@ type CmdObject struct {
 	Name        string        `json:"name"`
 	Arg         []string      `json:"arg"`
 	ErrCallBack ErrorCallBack `json:"err_call_back"`
+	Dir         string        `json:"dir"`
 }
-
 
 func ExeCMD(item *CmdObject) (err error) {
 
@@ -27,9 +27,10 @@ func ExeCMD(item *CmdObject) (err error) {
 
 	cmd := exec.Command(item.Name, item.Arg...)
 	cmd.Stderr = &stderr
-
-	
-	if buf, err = cmd.Output();err == nil {
+	if item.Dir != "" {
+		cmd.Dir = item.Dir
+	}
+	if buf, err = cmd.Output(); err == nil {
 		fmt.Printf("%s\n", buf)
 		return
 	}

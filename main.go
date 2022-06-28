@@ -50,7 +50,11 @@ func NewFlagParameter() (res *FlagParameter) {
 //各个参数命令的实现
 func (r *FlagParameter) Run() {
 	switch r.flagParameter.Release {
-	case "develop": //生成开发数据
+	case "mod":
+		lib.NewGoModAction(&common_argument.CommonArgument).
+			Run()
+	case "develop":                  //生成开发数据
+		common_argument.InitConfig() //初始化配置数据
 		lib.NewDevelopAction(&common_argument.CommonArgument).
 			Run()
 	case "fix": //修复BUG
@@ -67,7 +71,7 @@ func (r *FlagParameter) Run() {
 func (r *FlagParameter) InitFlag() (res *FlagParameter) {
 	res = r
 	// &user 就是接收命令行中输入 -u 后面的参数值，其他同理
-	flag.StringVar(&r.flagParameter.Release, "release", "develop", "创建一个新的版本(支持如下参数):\ndevelop:	生成一个新的开发分支\ntest:		将代码发布到develop分支\n")
+	flag.StringVar(&r.flagParameter.Release, "release", "develop", "创建一个新的版本(支持如下参数):\ndevelop:\t\t生成一个新的开发分支\ntest:\t\t\t将代码发布到develop分支\n")
 
 	// 解析命令行参数写入注册的flag里
 	flag.Parse()

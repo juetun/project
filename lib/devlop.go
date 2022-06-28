@@ -76,10 +76,15 @@ func (r *DevelopAction) selectVersion() (res string, sourceVersion string) {
 
 //获取当前可选择的版本
 func (r *DevelopAction) orgVersion(version string) (res []string) {
+
 	var err error
 	var v int
 	listVersionString := strings.Split(version, ".")
-	res = make([]string, 0, len(listVersionString))
+	res = make([]string, 0, len(listVersionString)+1)
+	if listVersionString[len(listVersionString)-1] == "0" {
+		res = append(res, fmt.Sprintf("%s.1", version))
+	}
+
 	for key, item := range listVersionString {
 		listVersionString[key] = item
 	}

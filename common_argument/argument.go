@@ -9,7 +9,7 @@ import (
 
 var CommonArgument = CommonArgumentStruct{}
 
-func init() {
+func InitConfig() {
 	var preLoad=&app_start.PluginsOperate{}
 	plugins.PluginsApp(preLoad)
 	CommonArgument.Application = common.GetAppConfig()
