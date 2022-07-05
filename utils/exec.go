@@ -19,7 +19,10 @@ func ExeCMD(item *CmdObject) (err error) {
 
 	var buf []byte
 	var stderr bytes.Buffer
-	cmdString := []interface{}{"【CMD】:", item.Name}
+	cmdString := []interface{}{fmt.Sprintf("【CMD】:%s",item.Name)}
+	if item.Dir != "" {
+		cmdString = append(cmdString, fmt.Sprintf("【DIR】%s", item.Dir))
+	}
 	for _, value := range item.Arg {
 		cmdString = append(cmdString, value)
 	}
