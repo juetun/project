@@ -46,12 +46,18 @@ func (r *GoModAction) runItem(proPatch string) (err error) {
 	log.Info("执行项目:", proPatch)
 	goPatch := os.Getenv("GOPATH")
 	pwdProject := fmt.Sprintf("%s/src/%s%s", goPatch, r.Prefix, proPatch)
-	cmdSlice := utils.CmdObject{Name: "go", Arg: []string{"get", "-v", r.DependPkgString}}
-	cmdSlice.Dir = pwdProject
-	if err = utils.ExeCMD(&cmdSlice); err != nil {
-		log.Error(err.Error())
-		return
+	cmdSlice := [] utils.CmdObject{
+		{Name: "go", Arg: []string{"get", "-v", r.DependPkgString}, Dir: pwdProject,},
+		{Name: "git", Arg: []string{"commit", "-am", r.DependPkgString}, Dir: pwdProject,},
+		{Name: "git", Arg: []string{"push", "origin"}, Dir: pwdProject,},
 	}
+	for _, cmd := range cmdSlice {
+		if err = utils.ExeCMD(&cmd); err != nil {
+			log.Error(err.Error())
+			return
+		}
+	}
+
 	return
 }
 
