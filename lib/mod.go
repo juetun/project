@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sync"
+	"time"
 )
 
 type GoModAction struct {
@@ -53,7 +54,6 @@ func (r *GoModAction) runItem(proPatch string) (err error) {
 	cmdSlice := [] utils.CmdObject{
 		{Name: "go", Arg: []string{"get", "-v", r.DependPkgString}, Dir: pwdProject,},
 		{Name: "git", Arg: []string{"commit", "-am", r.DependPkgString}, Dir: pwdProject,},
-		{Name: "git", Arg: []string{"push", "origin"}, Dir: pwdProject,},
 	}
 	for _, cmd := range cmdSlice {
 		if err = utils.ExeCMD(&cmd); err != nil {
@@ -61,7 +61,16 @@ func (r *GoModAction) runItem(proPatch string) (err error) {
 			return
 		}
 	}
-
+	cmdSlice = [] utils.CmdObject{
+		{Name: "git", Arg: []string{"push", "origin"}, Dir: pwdProject,},
+	}
+	time.Sleep(500*time.Millisecond)
+	for _, cmd := range cmdSlice {
+		if err = utils.ExeCMD(&cmd); err != nil {
+			log.Error(err.Error())
+			return
+		}
+	}
 	return
 }
 
