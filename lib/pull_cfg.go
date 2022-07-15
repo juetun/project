@@ -11,18 +11,14 @@ import (
 	"sync"
 )
 
-type GoModAction struct {
+type PullCfgAction struct {
 	arg             *common_argument.CommonArgumentStruct
 	Prefix          string  `json:"prefix"`
 	appList         AppList `json:"app_list"`
 	DependPkgString string  `json:"depend_pkg_string"`
 }
 
-type AppList struct {
-	Apps []string `json:"apps" yaml:"apps"`
-}
-
-func (r *GoModAction) ReadData() (err error) {
+func (r *PullCfgAction) ReadData() (err error) {
 	var yamlFile []byte
 	var dir string
 
@@ -42,18 +38,34 @@ func (r *GoModAction) ReadData() (err error) {
 	return
 }
 
-func (r *GoModAction) runItem(proPatch string) (err error) {
-	log.Info("执行项目:", proPatch)
-	goPatch := os.Getenv("GOPATH")
-	pwdProject := fmt.Sprintf("%s/src/%s%s", goPatch, r.Prefix, proPatch)
-	if !r.Exists(pwdProject) {
-		log.Warnf("目录(%s)不存在", pwdProject)
+func (r *PullCfgAction) Exists(path string) bool {
+	_, err := os.Stat(path) //os.Stat获取文件信息
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
+	}
+	return true
+}
+
+func (r *PullCfgAction) runItem(proPatch string) (err error) {
+
+	if proPatch == "library" {
+		log.Warnf("忽略项目目录(%s) \n", proPatch)
 		return
 	}
+
+	log.Info("执行项目:", proPatch)
+	goPatch := os.Getenv("GOPATH")
+	pwdProject := fmt.Sprintf("%s/src/%s%s/config/apps", goPatch, r.Prefix, proPatch)
+	if !r.Exists(pwdProject) {
+		log.Warnf("项目目录(%s)不存在 \n", pwdProject)
+		return
+	}
+
 	cmdSlice := [] utils.CmdObject{
-		{Name: "go", Arg: []string{"get", "-v", r.DependPkgString}, Dir: pwdProject,},
-		{Name: "git", Arg: []string{"commit", "-am", r.DependPkgString}, Dir: pwdProject,},
-		{Name: "git", Arg: []string{"push", "origin"}, Dir: pwdProject,},
+		{Name: "git", Arg: []string{"pull"}, Dir: pwdProject,},
 	}
 	for _, cmd := range cmdSlice {
 		if err = utils.ExeCMD(&cmd); err != nil {
@@ -65,17 +77,7 @@ func (r *GoModAction) runItem(proPatch string) (err error) {
 	return
 }
 
-func (r *GoModAction) Exists(path string) bool {
-	_, err := os.Stat(path) //os.Stat获取文件信息
-	if err != nil {
-		if os.IsExist(err) {
-			return true
-		}
-		return false
-	}
-	return true
-}
-func (r *GoModAction) Run() {
+func (r *PullCfgAction) Run() {
 	var err error
 	if err = r.ReadData(); err != nil {
 		return
@@ -110,13 +112,11 @@ func (r *GoModAction) Run() {
 	return
 }
 
-func NewGoModAction(arg *common_argument.CommonArgumentStruct) (res *GoModAction) {
-	res = &GoModAction{arg: arg}
+func NewPullCfgAction(arg *common_argument.CommonArgumentStruct) (res *PullCfgAction) {
+	res = &PullCfgAction{arg: arg}
 	if res.Prefix == "" {
 		res.Prefix = "github.com/juetun/"
 	}
-	if res.DependPkgString == "" {
-		res.DependPkgString = "github.com/juetun/base-wrapper@latest"
-	}
+
 	return
 }

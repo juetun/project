@@ -57,6 +57,12 @@ func (r *FlagParameter) Run() {
 			act.DependPkgString = r.flagParameter.Pkg
 		}
 		act.Run()
+	case "pull_cfg": //拉取最新配置文件
+		act := lib.NewPullCfgAction(&common_argument.CommonArgument)
+		if r.flagParameter.Pkg != "" {
+			act.DependPkgString = r.flagParameter.Pkg
+		}
+		act.Run()
 	case "develop":                  //生成开发数据
 		common_argument.InitConfig() //初始化配置数据
 		lib.NewDevelopAction(&common_argument.CommonArgument).
